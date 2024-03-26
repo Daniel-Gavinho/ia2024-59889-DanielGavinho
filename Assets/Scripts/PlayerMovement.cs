@@ -11,15 +11,24 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float speed;
     public float sprintSpeed;
+    public float maxAirSpeed;
     public float groundDrag;
     public float jumpForce;
     public float timeToJump;
     public float airMult;
     public float dashStrength;
+    public float dashDuration;
 
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask groundMask;
+
+    [Header("Camera")]
+    public Camera cam;
+    public float fov;
+    public float sprintFov;
+    public float dashFov;
+
     bool isGrounded;
 
     public Transform orientation;
@@ -33,12 +42,15 @@ public class PlayerMovement : MonoBehaviour
     bool canDash;
     Rigidbody rb;
     bool canJump;
+    bool momentumJump;
+    bool dashing;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        currentSpeed = speed;
+        currentSpeed = sprintSpeed;
+        cam.fieldOfView = sprintFov;
         canJumpAgain();
     }
 
@@ -48,8 +60,10 @@ public class PlayerMovement : MonoBehaviour
         pressedKeys();
         speedLimit();
 
-        if (isGrounded)
+        if (isGrounded) {
             rb.drag = groundDrag;
+            momentumJump = false;
+        }
         else
             rb.drag = 0;
     }
@@ -70,10 +84,12 @@ public class PlayerMovement : MonoBehaviour
             Invoke("canJumpAgain", timeToJump);
         }
 
-        if(Input.GetKey(sprintKey)) {
-            currentSpeed = sprintSpeed;
-        } else {
+        if(Input.GetKey(sprintKey) && isGrounded) {
             currentSpeed = speed;
+            cam.fieldOfView = fov;
+        } else {
+            currentSpeed = sprintSpeed;
+            cam.fieldOfView = sprintFov;
         }
 
         if(Input.GetKeyDown(sprintKey) && !isGrounded && canDash) {
@@ -96,7 +112,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void groundCheck() {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.05f, groundMask);
+        RaycastHit hit;
+        isGrounded = Physics.SphereCast(transform.position, 3*playerHeight/8, Vector3.down, out hit, playerHeight/4, groundMask);
+        if(isGrounded) Debug.Log("Grounded: " + isGrounded);
     }
 
     private void speedLimit() {
@@ -107,15 +125,43 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 limitedVelocity = groundVelocity.normalized * currentSpeed;
                 rb.velocity = new Vector3(limitedVelocity.x, rb.velocity.y, limitedVelocity.z);
             }
+        } else if (!momentumJump && !dashing) {
+            Vector3 airVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            Vector3 verticalVelocity = new Vector3(0, rb.velocity.y, 0);
+
+            if (airVelocity.magnitude > maxAirSpeed) {
+                Vector3 limitedVelocity = airVelocity.normalized * currentSpeed;
+                rb.velocity = new Vector3(limitedVelocity.x, rb.velocity.y, limitedVelocity.z);
+            }
+
+            if(verticalVelocity.magnitude > maxAirSpeed) {
+                Vector3 limitedVelocity = verticalVelocity.normalized * maxAirSpeed;
+                rb.velocity = new Vector3(rb.velocity.x, limitedVelocity.y, rb.velocity.z);
+            }
         }
     }
 
-    private void dash() {
-        rb.AddForce(orientation.forward * dashStrength, ForceMode.VelocityChange);
+    private IEnumerator DashCoroutine()
+    {
+        rb.useGravity = false;
+        rb.velocity = Vector3.zero;
+        dashing = true;
+        cam.fieldOfView = dashFov;
+        rb.AddForce(new Vector3(orientation.forward.x, 0, orientation.forward.z) * dashStrength, ForceMode.Impulse);
+        yield return new WaitForSeconds(dashDuration);
+        cam.fieldOfView = fov;
+        dashing = false;
+        rb.useGravity = true;
+    }
+
+    private void dash()
+    {
+        StartCoroutine(DashCoroutine());
     }
 
     private void jump() {
         rb.drag = 0;
+        currentSpeed = maxAirSpeed;
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
@@ -149,6 +195,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Moving"))
         {
             platformTransform = null;
+            momentumJump = true;
             rb.drag = 0;
             rb.velocity += collision.gameObject.GetComponent<MovingPlatform>().Velocity;
             Debug.Log("Velocity: " + rb.velocity);

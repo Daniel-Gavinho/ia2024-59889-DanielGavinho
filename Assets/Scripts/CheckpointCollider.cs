@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CheckpointCollider : MonoBehaviour
 {
+    public int checkpointNumber;
     private GameMasterScript gm;
 
     public void Start()
@@ -16,7 +17,7 @@ public class CheckpointCollider : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             Debug.Log("Checkpoint reached, new spawn position: " + transform.position + new Vector3(0, -1, 0));
-            gm.checkpoint = transform.position + new Vector3(0, -1, 0);
+            gm.currentCheckpoint = checkpointNumber;
         }
     }
 }

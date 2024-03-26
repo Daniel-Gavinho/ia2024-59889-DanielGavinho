@@ -6,7 +6,9 @@ public class GameMasterScript : MonoBehaviour
 {
     public static GameMasterScript Instance { get; private set; }
     public GameObject Player;
-    public Vector3 checkpoint;
+    public GameObject Camera;
+    public List<Transform> checkpoints = new List<Transform>();
+    public int currentCheckpoint = 0;
 
     void Awake()
     {
@@ -21,10 +23,22 @@ public class GameMasterScript : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            currentCheckpoint++;
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            currentCheckpoint--;
+        }
+    }
+
     public void Die()
     {
         Debug.Log("Player has died");
-        Player.transform.position = checkpoint;
+        Player.transform.position = checkpoints[currentCheckpoint].position - Vector3.up;
         Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 }

@@ -21,6 +21,7 @@ public class CameraControl : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        yRotation = -90;
     }
 
     private void Update()
