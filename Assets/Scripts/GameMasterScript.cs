@@ -28,10 +28,16 @@ public class GameMasterScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.N))
         {
             currentCheckpoint++;
+            Debug.Log("Checkpoint: " + currentCheckpoint);
         }
         if (Input.GetKeyDown(KeyCode.M))
         {
             currentCheckpoint--;
+            Debug.Log("Checkpoint: " + currentCheckpoint);
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Die();
         }
     }
 

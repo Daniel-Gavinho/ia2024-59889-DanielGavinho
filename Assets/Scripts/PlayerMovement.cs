@@ -15,9 +15,6 @@ public class PlayerMovement : MonoBehaviour
     public float groundDrag;
     public float jumpForce;
     public float timeToJump;
-    public float airMult;
-    public float dashStrength;
-    public float dashDuration;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -25,9 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Camera")]
     public Camera cam;
-    public float fov;
     public float sprintFov;
-    public float dashFov;
 
     bool isGrounded;
 
@@ -39,14 +34,18 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
     float horizontalMovement;
     float verticalMovement;
-    bool canDash;
     Rigidbody rb;
     bool canJump;
     bool momentumJump;
-    bool dashing;
+    DashingScript dashScript;
+
+    public bool IsGrounded() {
+        return isGrounded;
+    }
 
     void Start()
     {
+        dashScript = GetComponent<DashingScript>();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         currentSpeed = sprintSpeed;
@@ -84,21 +83,13 @@ public class PlayerMovement : MonoBehaviour
             Invoke("canJumpAgain", timeToJump);
         }
 
-        if(Input.GetKey(sprintKey) && isGrounded) {
-            currentSpeed = speed;
-            cam.fieldOfView = fov;
-        } else {
-            currentSpeed = sprintSpeed;
-            cam.fieldOfView = sprintFov;
-        }
-
-        if(Input.GetKeyDown(sprintKey) && !isGrounded && canDash) {
-            canDash = false;
-            dash();
-        }
-
         if(isGrounded) {
-            canDash = true;
+            if(Input.GetKey(sprintKey)) {
+                currentSpeed = speed;
+            } else {
+                currentSpeed = sprintSpeed;
+                cam.fieldOfView = sprintFov;
+            }
         }
     }
 
@@ -108,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
             rb.AddForce(moveDirection.normalized * currentSpeed * 10f, ForceMode.Force);
         else
-            rb.AddForce(moveDirection.normalized * currentSpeed * airMult, ForceMode.Force);
+            rb.AddForce(moveDirection.normalized * currentSpeed, ForceMode.Force);
     }
 
     private void groundCheck() {
@@ -125,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 limitedVelocity = groundVelocity.normalized * currentSpeed;
                 rb.velocity = new Vector3(limitedVelocity.x, rb.velocity.y, limitedVelocity.z);
             }
-        } else if (!momentumJump && !dashing) {
+        } else if (!momentumJump && !dashScript.IsDashing()) {
             Vector3 airVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             Vector3 verticalVelocity = new Vector3(0, rb.velocity.y, 0);
 
@@ -139,24 +130,6 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector3(rb.velocity.x, limitedVelocity.y, rb.velocity.z);
             }
         }
-    }
-
-    private IEnumerator DashCoroutine()
-    {
-        rb.useGravity = false;
-        rb.velocity = Vector3.zero;
-        dashing = true;
-        cam.fieldOfView = dashFov;
-        rb.AddForce(new Vector3(orientation.forward.x, 0, orientation.forward.z) * dashStrength, ForceMode.Impulse);
-        yield return new WaitForSeconds(dashDuration);
-        cam.fieldOfView = fov;
-        dashing = false;
-        rb.useGravity = true;
-    }
-
-    private void dash()
-    {
-        StartCoroutine(DashCoroutine());
     }
 
     private void jump() {
