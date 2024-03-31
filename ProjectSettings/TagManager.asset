@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Grappleable
   - Moving
+  - Enemy
   layers:
   - Default
   - TransparentFX
