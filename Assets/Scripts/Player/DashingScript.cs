@@ -14,6 +14,9 @@ public class DashingScript : MonoBehaviour
     public float sprintFov;
     public float dashFov;
     public Transform orientation;
+
+    [Header("State")]
+    public bool hasDash = false;
     PlayerMovement playerMovement;
     Rigidbody rb;
     bool canDash;
@@ -31,6 +34,8 @@ public class DashingScript : MonoBehaviour
     }
 
     void Update() {
+        if(!hasDash) return;
+
         if(Input.GetKeyDown(DashKey) && !playerMovement.IsGrounded() && canDash) {
             canDash = false;
             dash();

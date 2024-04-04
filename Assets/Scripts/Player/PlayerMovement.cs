@@ -142,8 +142,9 @@ public class PlayerMovement : MonoBehaviour
         canJump = true;
     }
 
-        private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("Collision: " + collision.gameObject.name);
         if (collision.gameObject.CompareTag("Moving"))
         {
             platformTransform = collision.gameObject.transform;

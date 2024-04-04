@@ -8,7 +8,7 @@ public class AttackColliderScript : MonoBehaviour
 
     public bool CanAttack {get { return canAttack; }}
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Trigger entered");
         if (other.gameObject.tag == "Player")
@@ -18,7 +18,7 @@ public class AttackColliderScript : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit(Collision other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {

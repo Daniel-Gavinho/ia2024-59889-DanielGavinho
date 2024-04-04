@@ -7,6 +7,7 @@ public class SpiderScript : MonoBehaviour
     public float damage = 10f;
     public float speed = 1f;
     public float timeToBeScared = 3f;
+    public bool Awake = false;
     public AttackColliderScript attackTrigger;
     public GameObject Orientation;
     private GameMasterScript gm;
@@ -17,6 +18,11 @@ public class SpiderScript : MonoBehaviour
     private float attackTime = 2.6f * 2.1f;
     private Coroutine attackCoroutine;
 
+    public void StartChase()
+    {
+        Awake = true;
+    }
+
     private void Start()
     {
         anim = GetComponent<Animator>();
@@ -25,6 +31,8 @@ public class SpiderScript : MonoBehaviour
 
     void Update()
     {
+        if(!Awake) return;
+
         if (!attacking && !scared)
         {
             if (attackTrigger.CanAttack)
@@ -49,6 +57,8 @@ public class SpiderScript : MonoBehaviour
         Vector3 playerPosition = gm.Player.transform.position;
         Vector3 moveDirection = (playerPosition - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+        targetRotation.x = 0;
+        targetRotation.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, speed * Time.deltaTime);
         transform.position = Vector3.MoveTowards(transform.position, new Vector3(playerPosition.x, transform.position.y, playerPosition.z), speed * Time.deltaTime);
     }
@@ -92,6 +102,15 @@ public class SpiderScript : MonoBehaviour
         {
             timer += Time.deltaTime;
             transform.position += moveDirection * speed * Time.deltaTime;
+
+            RaycastHit hit;
+            Debug.DrawRay(transform.position, moveDirection * 1f, Color.red);
+            if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 1f, transform.position.z), moveDirection, out hit, 1f))
+            {
+                Debug.Log("Found Wall");
+                break;
+            }
+
             yield return null;
         }
         anim.SetTrigger("NotScared");
@@ -100,7 +119,7 @@ public class SpiderScript : MonoBehaviour
     }
 
 
-    private void Die()
+    public void Die()
     {
         anim.SetTrigger("Die");
         StartCoroutine(WaitForDeathAnimation());

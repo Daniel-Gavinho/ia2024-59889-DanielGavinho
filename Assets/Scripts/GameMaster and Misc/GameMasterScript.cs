@@ -6,7 +6,7 @@ public class GameMasterScript : MonoBehaviour
 {
     public static GameMasterScript Instance { get; private set; }
     public GameObject Player;
-    public GameObject Camera;
+    public GameObject SpiderRoomHandler;
     public List<Transform> checkpoints = new List<Transform>();
     public int currentCheckpoint = 0;
 
@@ -44,7 +44,16 @@ public class GameMasterScript : MonoBehaviour
     public void Die()
     {
         Debug.Log("Player has died");
-        Player.transform.position = checkpoints[currentCheckpoint].position - Vector3.up;
         Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        Player.transform.position = checkpoints[currentCheckpoint].position - Vector3.up;
+        HandleSpiderRoom();
+    }
+
+    private void HandleSpiderRoom()
+    {
+        if (SpiderRoomHandler != null)
+        {
+            SpiderRoomHandler.GetComponent<SpiderRoomHandler>().Reset();
+        }
     }
 }
