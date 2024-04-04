@@ -9,6 +9,27 @@ public class GameMasterScript : MonoBehaviour
     public GameObject SpiderRoomHandler;
     public List<Transform> checkpoints = new List<Transform>();
     public int currentCheckpoint = 0;
+    private float timer = 0f;
+    private int collectables = 0;
+    private int goldCollectables = 0;
+    private int deaths = 0;
+
+    public float Timer
+    {
+        get { return timer; }
+    }
+
+    public void Collect()
+    {
+        collectables++;
+        Debug.Log("Collectables: " + collectables);
+    }
+
+    public void CollectGold()
+    {
+        goldCollectables++;
+        Debug.Log("Gold Collectables: " + goldCollectables);
+    }
 
     void Awake()
     {
@@ -21,6 +42,11 @@ public class GameMasterScript : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void Start()
+    {
+        StartCoroutine(StartTimer());
     }
 
     void Update()
@@ -37,16 +63,23 @@ public class GameMasterScript : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.K))
         {
-            Die();
+            Teleport();
         }
     }
 
     public void Die()
     {
         Debug.Log("Player has died");
+        deaths++;
         Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
         Player.transform.position = checkpoints[currentCheckpoint].position - Vector3.up;
         HandleSpiderRoom();
+    }
+
+    private void Teleport()
+    {
+        Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        Player.transform.position = checkpoints[currentCheckpoint].position;
     }
 
     private void HandleSpiderRoom()
@@ -54,6 +87,15 @@ public class GameMasterScript : MonoBehaviour
         if (SpiderRoomHandler != null)
         {
             SpiderRoomHandler.GetComponent<SpiderRoomHandler>().Reset();
+        }
+    }
+
+    private IEnumerator StartTimer()
+    {
+        while (true)
+        {
+            yield return null;
+            timer += Time.deltaTime;
         }
     }
 }
