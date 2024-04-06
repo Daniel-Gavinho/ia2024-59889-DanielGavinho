@@ -2,10 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameMasterScript : MonoBehaviour
 {
     public static GameMasterScript Instance { get; private set; }
+
+    [Header("GUI")]
+    public GUIScript gui;
+
+    [Header("Music")]
+    public Music music;
+    public AudioSource backgroundMusic;
+
     [Header("Game Management")]
     public GameObject Player;
     public GameObject SpiderRoomHandler;
@@ -35,6 +44,7 @@ public class GameMasterScript : MonoBehaviour
     private int deaths = 0;
 
     private Coroutine timerCoroutine;
+    private bool ifEnd = false;
 
     public float Timer
     {
@@ -67,13 +77,14 @@ public class GameMasterScript : MonoBehaviour
 
     public void ShowText(string text)
     {
-        GetComponent<GUIScript>().WriteText(text);
+        gui.WriteText(text);
     }
 
     public void showEndScreen()
     {
+        ifEnd = true;
         Music.Instance.StopSound();
-        GetComponent<GUIScript>().Deactivate();
+        gui.Deactivate();
         SequenceHandler.StopSequence();
         StopCoroutine(timerCoroutine);
         Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -105,8 +116,22 @@ public class GameMasterScript : MonoBehaviour
         yield return new WaitForSeconds(1f);
         FinalText.gameObject.SetActive(true);
         yield return new WaitForSeconds(1f);
-        FinalNumber.text = FormatTimer(timer - collectables - goldCollectables * 5 + deaths * 10);
+        float finalTimer = timer - collectables - goldCollectables * 5 + deaths * 10;
+        FinalNumber.text = FormatTimer(finalTimer);
         FinalNumber.gameObject.SetActive(true);
+        if (PlayerPrefs.HasKey("BestTime"))
+        {
+            if (finalTimer < PlayerPrefs.GetFloat("BestTime"))
+            {
+                PlayerPrefs.SetFloat("BestTime", finalTimer);
+                NewBestTimeText.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("BestTime", finalTimer);
+            NewBestTimeText.gameObject.SetActive(true);
+        }
     }
 
     void Awake()
@@ -114,7 +139,6 @@ public class GameMasterScript : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -147,6 +171,19 @@ public class GameMasterScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.L))
         {
             showEndScreen();
+        }
+
+        if(Input.GetKeyDown(KeyCode.R) && ifEnd)
+        {
+            backgroundMusic.Stop();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            backgroundMusic.Play();
+        }
+
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("Deleted all player prefs");
+            PlayerPrefs.DeleteAll();
         }
     }
 
