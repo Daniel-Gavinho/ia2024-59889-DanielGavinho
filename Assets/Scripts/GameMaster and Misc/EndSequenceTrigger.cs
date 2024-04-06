@@ -17,13 +17,12 @@ public class EndSequenceTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Stepped on trigger");
         if(lavaCoroutine != null) return;
-        Debug.Log("No lava coroutine running");
 
         if (other.CompareTag("Player"))
         {
             Debug.Log("End sequence triggered");
+            Music.Instance.PlaySound(1, 100f);
             lavaCoroutine = StartCoroutine(LavaRising());
         }
     }

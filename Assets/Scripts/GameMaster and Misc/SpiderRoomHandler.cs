@@ -52,6 +52,7 @@ public class SpiderRoomHandler : MonoBehaviour
             if(spider != null) return;
         }
 
+        Music.Instance.PlaySound(0, 2f);
         StartCoroutine(MoveDoor(ExitDoor, ExitDoorClosedPosition, ExitDoorOpenPosition));
         StartCoroutine(MoveDoor(EntranceDoor, EntranceDoorClosedPosition, EntranceDoorOpenPosition));
         Destroy(this.gameObject, TimeToClose);
@@ -70,6 +71,7 @@ public class SpiderRoomHandler : MonoBehaviour
             {
                 spider.GetComponent<SpiderScript>().StartChase();
             }
+            Music.Instance.PlaySound(0, 2f);
         }
     }
 

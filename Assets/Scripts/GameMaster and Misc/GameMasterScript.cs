@@ -56,6 +56,7 @@ public class GameMasterScript : MonoBehaviour
     public void Die()
     {
         Debug.Log("Player has died");
+        Music.Instance.StopSound();
         SequenceHandler.ResetSequence();
         deaths++;
         Player.GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -71,6 +72,7 @@ public class GameMasterScript : MonoBehaviour
 
     public void showEndScreen()
     {
+        Music.Instance.StopSound();
         GetComponent<GUIScript>().Deactivate();
         SequenceHandler.StopSequence();
         StopCoroutine(timerCoroutine);
