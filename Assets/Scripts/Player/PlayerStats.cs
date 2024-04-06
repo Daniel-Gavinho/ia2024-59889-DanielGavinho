@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public int Health = 3;
+    private GameMasterScript gm;
+
+    private void Start()
     {
-        
+        gm = GameMasterScript.Instance;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void TakeDamage(int damage) {
+        Health -= damage;
     }
 
-    public void TakeDamage(float damage) {
-        Debug.Log("Player took " + damage + " damage");
+    public void ResetHealth() {
+        Health = 3;
     }
 }

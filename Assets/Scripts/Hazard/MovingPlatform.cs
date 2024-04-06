@@ -9,6 +9,8 @@ public class MovingPlatform : MonoBehaviour
     public float timeToTake = 2;
     public float timeToWait = 2;
     public bool isActive = true;
+
+    private Coroutine changeDirectionCoroutine;
     private bool isMovingForward = false;
     private Vector3 velocity;
     private bool changingDirection = true;
@@ -19,7 +21,19 @@ public class MovingPlatform : MonoBehaviour
     private void Start()
     {
         velocity = Vector3.zero;
-        StartCoroutine(changeDirection());
+        changeDirectionCoroutine = StartCoroutine(changeDirection());
+    }
+
+    public void ResetPlatform()
+    {
+        isActive = false;
+        StopCoroutine(changeDirectionCoroutine);
+        changingDirection = true;
+        isMovingForward = false;
+        timer = 0f;
+        transform.position = InitialPosition.position;
+        velocity = Vector3.zero;
+        changeDirectionCoroutine = StartCoroutine(changeDirection());
     }
 
     void FixedUpdate()
@@ -50,7 +64,7 @@ public class MovingPlatform : MonoBehaviour
         {
             timer = 0f;
             changingDirection = true;
-            StartCoroutine(changeDirection());
+            changeDirectionCoroutine = StartCoroutine(changeDirection());
         }
     }
 
@@ -68,7 +82,7 @@ public class MovingPlatform : MonoBehaviour
             velocity = (InitialPosition.position - FinalPosition.position) / timeToTake;
         }
 
-        velocity.y = Mathf.Max(velocity.y, 0.0f);
+        velocity.y = 0f;
 
         Debug.Log("Velocity: " + velocity);
     }

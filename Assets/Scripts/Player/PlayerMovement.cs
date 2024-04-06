@@ -24,6 +24,9 @@ public class PlayerMovement : MonoBehaviour
     public Camera cam;
     public float sprintFov;
 
+    [HideInInspector]
+    public Vector3 lastSafePosition;
+
     bool isGrounded;
 
     public Transform orientation;
@@ -44,6 +47,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void MomentumJump() {
         StartCoroutine(momentumJumpCoroutine());
+    }
+
+    public void ToLastSafePosition() {
+        transform.position = lastSafePosition;
+        rb.velocity = Vector3.zero;
     }
 
     private IEnumerator momentumJumpCoroutine() {
@@ -67,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if(!startingJump) groundCheck();
+        if(isGrounded) safeCheck();
         pressedKeys();
         speedLimit();
 
@@ -117,6 +126,14 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit hit;
         isGrounded = Physics.SphereCast(transform.position, 3*playerHeight/8, Vector3.down, out hit, playerHeight/4, groundMask);
         if(isGrounded) Debug.Log("Grounded: " + isGrounded);
+    }
+
+    private void safeCheck() {
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position, Vector3.down, out hit, playerHeight/2 + 0.1f, groundMask)) {
+            if(hit.transform.tag != "Moving")
+                lastSafePosition = transform.position;
+        }
     }
 
     private void speedLimit() {

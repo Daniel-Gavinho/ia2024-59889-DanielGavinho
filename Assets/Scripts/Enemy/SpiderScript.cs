@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpiderScript : MonoBehaviour
 {
-    public float damage = 10f;
+    public int damage = 1;
     public float speed = 1f;
     public float timeToBeScared = 3f;
     public bool Awake = false;
@@ -43,11 +43,6 @@ public class SpiderScript : MonoBehaviour
             {
                 Move();
             }
-        }
-
-        if(Input.GetKeyDown(KeyCode.L))
-        {
-            TakeDamage();
         }
     }
 

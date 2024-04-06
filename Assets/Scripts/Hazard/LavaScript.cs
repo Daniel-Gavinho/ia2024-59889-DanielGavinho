@@ -5,7 +5,8 @@ using UnityEngine;
 public class LavaScript : MonoBehaviour
 {
 
-    public float lavaSpeed = 0.001f;
+    public float LavaSpeed = 0.001f;
+    public bool Lethal = false;
 
     private GameMasterScript gm;
     private Renderer rend;
@@ -22,8 +23,8 @@ public class LavaScript : MonoBehaviour
 
     void Update()
     {
-        float offsetX = Mathf.Cos(lavaSpeed * Time.time) * Mathf.Sin(lavaSpeed * Time.time) * randomX;
-        float offsetY = (Mathf.Sin(lavaSpeed * Time.time) * Mathf.Cos(lavaSpeed * Time.time) + Mathf.Sin(lavaSpeed * Time.time) / 2)  * randomY;
+        float offsetX = Mathf.Cos(LavaSpeed * Time.time) * Mathf.Sin(LavaSpeed * Time.time) * randomX;
+        float offsetY = (Mathf.Sin(LavaSpeed * Time.time) * Mathf.Cos(LavaSpeed * Time.time) + Mathf.Sin(LavaSpeed * Time.time) / 2)  * randomY;
         
         rend.material.SetTextureOffset("_MainTex", new Vector2(offsetX, offsetY));
     }
@@ -34,7 +35,17 @@ public class LavaScript : MonoBehaviour
         Debug.Log(collision.gameObject.tag);
         if (collision.gameObject.tag == "Player")
         {
-            gm.Die();
+            if(Lethal)
+            {
+                gm.Die();
+            } 
+            else
+            {
+                gm.Player.GetComponent<PlayerStats>().TakeDamage(1);
+                if(gm.Player.GetComponent<PlayerStats>().Health > 0)
+                    gm.Player.GetComponent<PlayerMovement>().ToLastSafePosition();
+                else gm.Die();
+            }
         }
     }
 

@@ -8,6 +8,7 @@ public class PlayerActions : MonoBehaviour
     public Transform cameraOrientation;
     public GameObject ShootFrom;
     public LineRenderer lr;
+    public LayerMask grappleLayer;
 
     [Header("Variables")]
     public bool hasGrapple = false;
@@ -56,18 +57,14 @@ public class PlayerActions : MonoBehaviour
         RaycastHit hit;
         Debug.Log("Attempting to grapple");
         Debug.DrawRay(cameraOrientation.position, cameraOrientation.forward * 25, Color.red, 2);
-        if (Physics.Raycast(cameraOrientation.position, cameraOrientation.forward, out hit, 25))
+        if (Physics.Raycast(cameraOrientation.position, cameraOrientation.forward, out hit, 25, grappleLayer))
         {
-            Debug.Log("Hit: " + hit.transform.tag);
-            if (hit.transform.tag == "Grappleable")
-            {
-                rb.velocity = Vector3.zero;
-                lr.enabled = true;
-                lr.SetPosition(1, hit.transform.position);
-                grapplePoint = hit.transform;
-                rb.useGravity = false;
-                grappling = true;
-            }
+            rb.velocity = Vector3.zero;
+            lr.enabled = true;
+            lr.SetPosition(1, hit.transform.position);
+            grapplePoint = hit.transform;
+            rb.useGravity = false;
+            grappling = true;
         }
     }
 

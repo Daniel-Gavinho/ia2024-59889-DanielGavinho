@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1884876540641502646}
   - component: {fileID: 2522597823776372278}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Point Light
   m_TagString: Grappleable
   m_Icon: {fileID: 0}
@@ -150,13 +150,57 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
       objectReference: {fileID: 0}
+    - target: {fileID: -6198068988319008574, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5976071629391176779, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3477864577585124648, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3311392916816650371, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3065410748432032004, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2010431771644721648, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -885264430177597064, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
       propertyPath: m_Name
       value: Wall Hook
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
       propertyPath: m_TagString
       value: Grappleable
+      objectReference: {fileID: 0}
+    - target: {fileID: 1396792749669637682, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6574091114309173524, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6773935864695782916, guid: 4695db90f7d49524aab59c7c8fd2b8e6, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -198,5 +242,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.5, y: 1, z: 1.5}
   m_Center: {x: 0, y: 0.5, z: 0}

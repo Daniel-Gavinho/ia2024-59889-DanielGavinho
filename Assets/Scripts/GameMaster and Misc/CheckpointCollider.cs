@@ -5,6 +5,8 @@ using UnityEngine;
 public class CheckpointCollider : MonoBehaviour
 {
     public int checkpointNumber;
+    public bool triggersText;
+    public string textToDisplay;
     private GameMasterScript gm;
 
     public void Start()
@@ -18,6 +20,10 @@ public class CheckpointCollider : MonoBehaviour
         {
             Debug.Log("Checkpoint reached, new spawn position: " + transform.position + new Vector3(0, -1, 0));
             gm.currentCheckpoint = checkpointNumber;
+            if(triggersText)
+            {
+                gm.ShowText(textToDisplay);
+            }
         }
     }
 }

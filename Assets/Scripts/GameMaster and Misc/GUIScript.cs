@@ -1,10 +1,28 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+using TMPro;
 
 public class GUIScript : MonoBehaviour
 {
     public Texture2D dotTexture;
+    public GameObject Canvas;
+    public TextMeshProUGUI TimerText;
+    public TextMeshProUGUI TutorialText;
+    public Image[] Hearts;
     public int dotSize = 10;
     private GameMasterScript gm;
+
+    public void Deactivate()
+    {
+        Canvas.SetActive(false);
+        this.enabled = false;
+    }
+
+    public void WriteText(string text)
+    {
+        StartCoroutine(WriteCoroutine(text));
+    }
 
     void Start()
     {
@@ -13,16 +31,41 @@ public class GUIScript : MonoBehaviour
 
     void OnGUI()
     {
-        GUIStyle timerStyle = new GUIStyle();
-        timerStyle.fontSize = 32;
-        timerStyle.normal.textColor = Color.white;
-        timerStyle.alignment = TextAnchor.UpperRight;
-        Vector2 topRight = new Vector2(Screen.width, 0);
-        Rect timerRect = new Rect(topRight.x - 200, 0, 200, 50);
-        GUI.Label(timerRect, "Time: " + FormatTimer(gm.Timer), timerStyle);
         Vector2 center = new Vector2(Screen.width / 2, Screen.height / 2);
         Rect dotRect = new Rect(center.x - dotSize / 2, center.y - dotSize / 2, dotSize, dotSize);
         GUI.DrawTexture(dotRect, dotTexture);
+    }
+
+    private void Update()
+    {
+        for (int i = 0; i < Hearts.Length; i++)
+        {
+            if (i + 1 <= gm.Player.GetComponent<PlayerStats>().Health)
+            {
+                Hearts[i].color = Color.white;
+            }
+            else
+            {
+                Hearts[i].color = Color.black;
+            }
+        }
+
+        TimerText.text = "Time: " + FormatTimer(gm.Timer);
+    }
+
+    private IEnumerator WriteCoroutine(string text)
+    {
+        TutorialText.text = "";
+
+        foreach (char c in text)
+        {
+            TutorialText.text += c;
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        TutorialText.text = "";
     }
 
     string FormatTimer(float timer)

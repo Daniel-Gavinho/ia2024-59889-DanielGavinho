@@ -21,7 +21,10 @@ public class LavaFountain : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            gm.Die();
+            gm.Player.GetComponent<PlayerStats>().TakeDamage(1);
+            if(gm.Player.GetComponent<PlayerStats>().Health > 0)
+                gm.Player.GetComponent<PlayerMovement>().ToLastSafePosition();
+            else gm.Die();
         }
     }
 }
