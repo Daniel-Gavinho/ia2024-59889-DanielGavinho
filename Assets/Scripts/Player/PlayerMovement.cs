@@ -28,19 +28,30 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform orientation;
 
-    private Transform platformTransform;
-    private Vector3 platformLastPosition;
     float currentSpeed;
     Vector3 moveDirection;
     float horizontalMovement;
     float verticalMovement;
     Rigidbody rb;
     bool canJump;
-    bool momentumJump;
     DashingScript dashScript;
+    bool momentumJump;
+    bool startingJump;
 
     public bool IsGrounded() {
         return isGrounded;
+    }
+
+    public void MomentumJump() {
+        StartCoroutine(momentumJumpCoroutine());
+    }
+
+    private IEnumerator momentumJumpCoroutine() {
+        momentumJump = true;
+        isGrounded = false;
+        startingJump = true;
+        yield return new WaitForSeconds(0.2f);
+        startingJump = false;
     }
 
     void Start()
@@ -55,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        groundCheck();
+        if(!startingJump) groundCheck();
         pressedKeys();
         speedLimit();
 
@@ -140,40 +151,5 @@ public class PlayerMovement : MonoBehaviour
 
     private void canJumpAgain() {
         canJump = true;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log("Collision: " + collision.gameObject.name);
-        if (collision.gameObject.CompareTag("Moving"))
-        {
-            platformTransform = collision.gameObject.transform;
-            platformLastPosition = platformTransform.position;
-        }
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Moving"))
-        {
-            Vector3 platformPositionDelta = platformTransform.position - platformLastPosition;
-            
-            rb.MovePosition(rb.position + platformPositionDelta);
-
-            platformLastPosition = platformTransform.position;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Moving"))
-        {
-            platformTransform = null;
-            momentumJump = true;
-            rb.drag = 0;
-            rb.velocity += collision.gameObject.GetComponent<MovingPlatform>().Velocity;
-            Debug.Log("Velocity: " + rb.velocity);
-            Debug.Log("Drag: " + rb.drag);
-        }
     }
 }

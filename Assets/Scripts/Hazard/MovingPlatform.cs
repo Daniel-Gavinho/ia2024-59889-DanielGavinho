@@ -8,47 +8,50 @@ public class MovingPlatform : MonoBehaviour
     public Transform FinalPosition;
     public float timeToTake = 2;
     public float timeToWait = 2;
-    private bool isMovingForward = true;
+    public bool isActive = true;
+    private bool isMovingForward = false;
     private Vector3 velocity;
+    private bool changingDirection = true;
+    private float timer = 0f;
 
     public Vector3 Velocity { get => velocity; }
 
     private void Start()
     {
         velocity = Vector3.zero;
-        StartCoroutine(MovePlatform(InitialPosition.position, FinalPosition.position, timeToTake));
+        StartCoroutine(changeDirection());
     }
 
-    // private void testKey()
-    // {
-    //     if (Input.GetKeyDown(KeyCode.K))
-    //     {
-    //         timeToTake -= 0.1f;
-    //         Debug.Log("Time to take: " + timeToTake);
-    //     }
-
-    //     if (Input.GetKeyDown(KeyCode.L))
-    //     {
-    //         timeToTake += 0.1f;
-    //         Debug.Log("Time to take: " + timeToTake);
-    //     }
-    // }
-
-    private IEnumerator MovePlatform(Vector3 initialPosition, Vector3 finalPosition, float timeToTake)
+    void FixedUpdate()
     {
-        velocity = (finalPosition - initialPosition) / timeToTake;
-        float journey = 0.0f;
+        if(!isActive) return;
 
-        while (journey <= timeToTake)
+        if(!changingDirection)
         {
-            journey += Time.deltaTime;
-            float percent = Mathf.Clamp01(journey / timeToTake);
-
-            transform.position = Vector3.Lerp(initialPosition, finalPosition, percent);
-            yield return null;
+            if (isMovingForward)
+            {
+                MovePlatform(InitialPosition.position, FinalPosition.position);
+            }
+            else
+            {
+                MovePlatform(FinalPosition.position, InitialPosition.position);
+            }
         }
+    }
 
-        StartCoroutine(changeDirection());
+    private void MovePlatform(Vector3 initialPosition, Vector3 finalPosition)
+    {
+        timer += Time.deltaTime;
+        float percent = Mathf.Clamp01(timer / timeToTake);
+
+        transform.position = Vector3.Lerp(initialPosition, finalPosition, percent);
+
+        if(timer >= timeToTake)
+        {
+            timer = 0f;
+            changingDirection = true;
+            StartCoroutine(changeDirection());
+        }
     }
 
     private IEnumerator changeDirection()
@@ -56,15 +59,37 @@ public class MovingPlatform : MonoBehaviour
         velocity = Vector3.zero;
         yield return new WaitForSeconds(timeToWait);
 
-        if (isMovingForward)
-        {
-            StartCoroutine(MovePlatform(FinalPosition.position, InitialPosition.position, timeToTake));
-            isMovingForward = false;
+        isMovingForward = !isMovingForward;
+        changingDirection = false;
+        if(isMovingForward) {
+            velocity = (FinalPosition.position - InitialPosition.position) / timeToTake;
         }
-        else
+        else {
+            velocity = (InitialPosition.position - FinalPosition.position) / timeToTake;
+        }
+
+        velocity.y = Mathf.Max(velocity.y, 0.0f);
+
+        Debug.Log("Velocity: " + velocity);
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
         {
-            StartCoroutine(MovePlatform(InitialPosition.position, FinalPosition.position, timeToTake));
-            isMovingForward = true;
+            isActive = true;
+            collision.transform.SetParent(transform);
+        }
+    }
+
+    private void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            collision.transform.SetParent(null);
+            collision.gameObject.GetComponent<PlayerMovement>().MomentumJump();
+            collision.gameObject.GetComponent<Rigidbody>().velocity += velocity;
+            Debug.Log("Player jump velocity: " + collision.gameObject.GetComponent<Rigidbody>().velocity);
         }
     }
 

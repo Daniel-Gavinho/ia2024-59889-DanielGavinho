@@ -98,10 +98,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b853f1d1c127d4d87e4181c36747ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialPosition: {x: -25, y: 0, z: 0}
-  FinalPosition: {x: -39, y: 0, z: 0}
+  InitialPosition: {fileID: 0}
+  FinalPosition: {fileID: 0}
   timeToTake: 2
   timeToWait: 2
+  isActive: 1
 --- !u!65 &3970272614888486024
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -142,5 +143,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.1, z: 1}
-  m_Center: {x: -0.0000009536743, y: 0.05, z: 0}
+  m_Size: {x: 1, y: 1.679684, z: 1}
+  m_Center: {x: -0.0000009536743, y: 0.33984226, z: 0}
