@@ -37,10 +37,13 @@ public class PlayerActions : MonoBehaviour
             lr.enabled = false;
             grappling = false;
         }
+    }
 
+    private void FixedUpdate()
+    {
         if(grappling)
         {
-            pullPlayerTo(grapplePoint.transform.position + grapplePoint.transform.up * 1.5f);
+            pullPlayerTo(grapplePoint);
         }
     }
 
@@ -68,8 +71,8 @@ public class PlayerActions : MonoBehaviour
         }
     }
 
-    private void pullPlayerTo(Vector3 target)
+    private void pullPlayerTo(Transform target)
     {
-        transform.position = Vector3.MoveTowards(transform.position, target, 20 * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, target.position + target.up * 1.5f, 20 * Time.deltaTime);
     }
 }
